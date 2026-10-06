@@ -56,11 +56,17 @@ class Selector(Node):
 
 
 def build_guard_tree() -> Node:
-    """Selector[ Sequence[see_player, chase], Sequence[hear_noise, investigate], patrol ]"""
+    """Приоритет: атака, тревога, преследование, слух, поиск, патруль."""
     return Selector(
+        Sequence(Condition(lambda bb: bb.get("see_player") and bb.get("in_attack_range")),
+                 Action(lambda bb: bb.update(action="attack") or Status.RUNNING)),
+        Sequence(Condition(lambda bb: bb.get("alert_phase")),
+                 Action(lambda bb: bb.update(action="alert") or Status.RUNNING)),
         Sequence(Condition(lambda bb: bb.get("see_player")),
                  Action(lambda bb: bb.update(action="chase") or Status.RUNNING)),
         Sequence(Condition(lambda bb: bb.get("hear_noise")),
-                 Action(lambda bb: bb.update(action="investigate") or Status.RUNNING)),
+                 Action(lambda bb: bb.update(action="alert") or Status.RUNNING)),
+        Sequence(Condition(lambda bb: bb.get("searching")),
+                 Action(lambda bb: bb.update(action="search") or Status.RUNNING)),
         Action(lambda bb: bb.update(action="patrol") or Status.RUNNING),
     )

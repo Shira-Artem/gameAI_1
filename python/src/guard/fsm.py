@@ -1,4 +1,4 @@
-"""Конечный автомат стражника: Patrol → Alert → Chase → Attack → Return."""
+"""Конечный автомат стражника для учебной pygame-сцены."""
 
 from enum import Enum, auto
 
@@ -8,6 +8,7 @@ class State(Enum):
     ALERT = auto()
     CHASE = auto()
     ATTACK = auto()
+    SEARCH = auto()
     RETURN = auto()
 
 
@@ -17,8 +18,11 @@ TRANSITIONS: dict[tuple[State, str], State] = {
     (State.ALERT, "confirm"): State.CHASE,
     (State.ALERT, "timeout"): State.PATROL,
     (State.CHASE, "in_range"): State.ATTACK,
-    (State.CHASE, "lost"): State.RETURN,
+    (State.CHASE, "lost"): State.SEARCH,
     (State.ATTACK, "out_of_range"): State.CHASE,
+    (State.ATTACK, "lost"): State.SEARCH,
+    (State.SEARCH, "see_player"): State.CHASE,
+    (State.SEARCH, "timeout"): State.RETURN,
     (State.RETURN, "arrived"): State.PATROL,
 }
 

@@ -6,9 +6,12 @@ import math
 def in_vision_cone(guard_pos, guard_dir, target_pos, fov_deg=90.0, max_dist=200.0) -> bool:
     dx, dy = target_pos[0] - guard_pos[0], target_pos[1] - guard_pos[1]
     dist = math.hypot(dx, dy)
-    if dist == 0 or dist > max_dist:
-        return dist == 0
-    cos_angle = (dx * guard_dir[0] + dy * guard_dir[1]) / (dist * math.hypot(*guard_dir))
+    direction_length = math.hypot(*guard_dir)
+    if dist == 0:
+        return True
+    if dist > max_dist or direction_length == 0:
+        return False
+    cos_angle = (dx * guard_dir[0] + dy * guard_dir[1]) / (dist * direction_length)
     return cos_angle >= math.cos(math.radians(fov_deg / 2))
 
 
